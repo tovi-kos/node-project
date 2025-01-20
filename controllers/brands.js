@@ -69,11 +69,12 @@ export async function addBrand(req, res) {
 export async function updateBrandById(req, res) {
     let { id } = req.params;
 
-    if (req.body.nameBrand.length < 2)
+    if (req.body.nameBrand != null && req.body.nameBrand.length < 2)
         return res.status(400).json({
             title: "erorr to update brand",
             message: "you must enter name with at least 2 letters  "
         });
+    
     try {
 
         let data = await brandsModel.findByIdAndUpdate(id, req.body, { new: true });
