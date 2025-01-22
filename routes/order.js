@@ -2,6 +2,7 @@ import { Router } from "express";
 import {deleteOrderById, getAllOrders,addOrder,getAllOrdersByUserId,updateOrderById} from "../controllers/order.js"
 
 const router=Router();
+// ניתובים לכל הקריאות
 
 router.get("/",getAllOrders);
 router.get("/:id",getAllOrdersByUserId);

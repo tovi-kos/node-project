@@ -114,7 +114,7 @@ export async function updateUserPassword(req, res) {
         });
 
     try {
-        let data = await userModel.findByIdAndUpdate(id, password, { new: true });
+        let data = await userModel.findByIdAndUpdate(id, {password}, { new: true });
         if (!data)
             return res.status(400).json({
                 title: "erorr to update user password",
@@ -139,7 +139,7 @@ export async function loginUser(req, res) {
         });
 
     try {
-        let data = await newUser.findOne({
+        let data = await userModel.findOne({
             userName: req.body.userName,
             password: req.body.password
         });

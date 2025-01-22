@@ -2,6 +2,7 @@ import { Router } from "express";
 import {addBrand,deleteBrandById,getAllBrands,getBrandById,updateBrandById}from "../controllers/brands.js";
 
 const router=Router();
+// ניתובים לכל הקריאות
 
 router.get("/",getAllBrands);
 router.get("/:id",getBrandById);

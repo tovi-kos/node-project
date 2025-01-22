@@ -1,4 +1,6 @@
-import { orderModel } from "../models/order.js"
+import { brandsModel } from "../models/brands.js";
+import { orderModel } from "../models/order.js";
+import {userModel} from "../models/user.js";
 
 export async function getAllOrders(req, res) {
     try {
@@ -14,19 +16,18 @@ export async function getAllOrders(req, res) {
     }
 }
 export async function getAllOrdersByUserId(req, res) {
-
-    let { id } = req.params;
+    let  id = req.params.id;
     try {
-        let data = await orderModel.find(id);
+        let data = await orderModel.find({ userId: id });
         if (!data)
             return res.status(400).json({
                 title: "error cannot connect to get byUserId",
-                message: "something wrong"
+                message: "no find orders from this userId"
             })
         res.json(data);
     }
     catch (err) {
-        console.log("err");
+        console.log("err"+ err);
         res.status(400).json({
             title: "error cannot connect to getByUserId",
             message: "something wrong "
@@ -51,15 +52,23 @@ export async function addOrder(req, res) {
             message: "you must enter brands "
         });
     try {
+       let brCode=req.body.brands.map(b=>b._id);
+       let exist=await brandsModel.find({_id:{$in :brCode}})
+
+       if (exist.length !== brCode.length) 
+        return res.status(400).json({
+            title: "error to add order",
+            message: "One or more brands do not exist in the database"
+        });
         let newOrder = new orderModel(req.body);
         newOrder.deadline.setDate(newOrder.deadline.getDate() + 14);
-        newOrder.totalPrice += newOrder.brands.map(b => b.price);
+        newOrder.totalPrice = Number(newOrder.brands.reduce((sum, b) => sum + Number(b.price) * Number(b.amount), 0)) + Number(newOrder.priceOrder);
         console.log(newOrder);
-        let data = await newBrand.save();
+        let data = await newOrder.save();
         res.json(data);
-    }
+}
     catch (err) {
-        console.log("err");
+        console.log("err"+err);
         res.status(400).json({
             title: "error cannot connect to add order",
             message: "something wrong "
@@ -69,7 +78,7 @@ export async function addOrder(req, res) {
 export async function updateOrderById(req, res) {
     let { id } = req.params;
     try {
-        let data = await brandsModel.findByIdAndUpdate(id, { isSent: true }, { new: true });
+        let data = await orderModel.findByIdAndUpdate(id, { isSent: true }, { new: true });
         console.log(data);
         if (!data)
             return res.status(400).json({
@@ -88,9 +97,9 @@ export async function updateOrderById(req, res) {
 
 }
 export async function deleteOrderById(req, res) {
-    let { id } = req.params;
+    let id = req.params.id;
     try {
-        let data = await brandsModel.find(id);
+        let data = await orderModel.findById(id);
         if (!data)
             return res.status(400).json({
                 title: "erorr to delete brand",
@@ -101,7 +110,7 @@ export async function deleteOrderById(req, res) {
                 title: "erorr to delete order",
                 message: "the order is sent "
             });
-        data = await brandsModel.findByIdAndDelete(id);
+        data = await orderModel.findByIdAndDelete(id);
         res.json(data);
     }
     catch (err) {

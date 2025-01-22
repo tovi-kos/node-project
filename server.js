@@ -6,6 +6,7 @@ import { connectToDB } from "./config/DB.js"
 import brandsRouter from "./routes/brands.js";
 import  userRouter  from "./routes/user.js";
 import  orderRouter  from "./routes/order.js";
+import logToFile from "./middlewares/logToFile.js";
 
 
 dotenv.config();
@@ -14,7 +15,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+app.use(logToFile);
 
 app.use("/brands", brandsRouter);
 app.use("/user", userRouter);
